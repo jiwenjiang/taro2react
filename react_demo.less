@@ -1,0 +1,52 @@
+.index {
+    background: #f9fbfc;
+    height: 100vh;
+    --primary-color: #f2b04f;
+    --text-color: #112950;
+    box-sizing: border-box;
+  }
+  
+  .tagBox {
+    padding: 20px;
+  
+    .tag {
+      width: 64px;
+      height: 20px;
+      background-color: #635DF7;
+      color: #fff;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 20px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+  
+    .descLi {
+      padding-left: 16px;
+      font-size: 16px;
+      color: var(--text-color);
+      position: relative;
+      margin-bottom: 24px;
+    }
+  
+    .descLi::before {
+      content: '';
+      width: 12px;
+      height: 1px;
+      background-color: #635DF7;
+      position: absolute;
+      left: 0;
+      top: 50%;
+    }
+  
+    .nextBtn {
+      width: 100%;
+      height: 32px;
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      line-height: 32px;
+      text-align: center;
+      margin-top: 16px;
+      border-radius: 16px;
+    }
+  }
