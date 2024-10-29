@@ -92,9 +92,9 @@ export default function App() {
             <ListItem
               left={v.name}
               right={
-                <text className="arrow-icon">
+                <Text className="arrow-icon">
                   <Arrow color="#fff" />
-                </text>
+                </Text>
               }
               customStyles={cusStyle}
             />

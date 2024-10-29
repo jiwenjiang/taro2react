@@ -13,18 +13,18 @@ function OpenFile(path, ext)
     if ext ~= "tsx" then
         content = rex.gsub(content, "(\\d+px)", function(m)
             local num = m:match("%d+")
-            return math.ceil(num / 2) .. "px"
+            return math.ceil(num * 2) .. "px"
         end)
     else
-        content = rex.gsub(content, "(<View|<ScrollView)(?!\\w)", "<div")
-        content = rex.gsub(content, '</View>|</ScrollView>', '</div>')
-        content = rex.gsub(content, "<Text(?!\\w)", "<span")
-        content = content:gsub("</Text>", "</span>")
-        content = rex.gsub(content, "<Image(?!\\w)", "<img")
-        content = content:gsub("</Image>", "</img>")
+        content = rex.gsub(content, "<div(?!\\w)", "<View")
+        content = rex.gsub(content, '</div>', '</View>')
+        content = rex.gsub(content, "<span(?!\\w)", "<Text")
+        content = content:gsub("</span>", "</Text>")
+        content = rex.gsub(content, "<img(?!\\w)", "<Image")
+        content = content:gsub("</img>", "</Image>")
     end
 
-    local outputPath = "react_" .. path
+    local outputPath = "taro_" .. path
 
     file, err = io.open(outputPath, "w")
     if not file then
