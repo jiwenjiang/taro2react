@@ -1,3 +1,5 @@
+#!/opt/homebrew/bin/lua
+
 local checkFileExtensionAndContinue = function(filename)
     local extension = filename:match("%.([^%.]+)$") -- 获取文件名的后缀
     if extension ~= "tsx" and extension ~= "less" and extension ~= "scss" then

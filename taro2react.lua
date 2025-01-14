@@ -1,5 +1,39 @@
+#!/opt/homebrew/bin/lua
+
 local rex = require "rex_pcre"
+local scriptPath = debug.getinfo(1, "S").source:sub(2)
+local scriptDir = scriptPath:match("(.*/)")
+package.path = scriptDir .. "?.lua;" .. package.path
+local isDesktop = false
 local checkFileExtensionAndContinue = require("checkFileExtensionAndContinue")
+local handleArg = require("handleArg")
+
+function OsDesktopPath()
+    -- 获取操作系统类型
+    local osType = package.config:sub(1, 1)
+
+    -- 根据操作系统类型拼接桌面路径
+    local desktopPath
+    if osType == "\\" then
+        -- Windows系统
+        desktopPath = os.getenv("USERPROFILE") .. "\\Desktop"
+    else
+        -- macOS或Linux系统
+        desktopPath = os.getenv("HOME") .. "/Desktop"
+    end
+    return desktopPath
+end
+
+function convert_filename(filename)
+    -- 检查文件名是否包含 /dir/ 前缀，不管前面有多少层目录
+    if filename:match("^.*/") then
+        -- 如果有 /dir/，将 /dir/ 后的文件名加上 react_ 前缀
+        return filename:gsub("(.*/)(.+)", "%1react_%2")
+    else
+        -- 如果没有 /dir/，直接在文件名前加上 react_
+        return "react_" .. filename
+    end
+end
 
 function OpenFile(path, ext)
     local file = io.open(path, "r")
@@ -33,12 +67,17 @@ function OpenFile(path, ext)
         content = rex.gsub(content, "<Image(?!\\w)", "<img")
         content = content:gsub("</Image>", "</img>")
         content = content:gsub(".scss", ".less")
-        content = content:gsub("Notify%.open%({[^}]-color:%s*\"warning\"[^}]-message:%s*\"(.-)\"%}",
+        content = content:gsub("Notify%.open%({[^}]-color:%s*[^}]-message:%s*\"(.-)\"%}",
             "Notify.show({ type: \"warning\", message: \"%1\" })")
     end
 
     local newPath = rex.gsub(path, ".scss", ".less")
-    local outputPath = "react_" .. newPath
+    -- local path, filename, extension = newPath:match("(.*/)(.-)%.([^%.]+)$")
+    local filename, extension = newPath:match("([^/]+)%.([^/]+)")
+    local outputPath = convert_filename(newPath)
+    if isDesktop then
+        outputPath = OsDesktopPath() .. "/react_" .. filename .. "." .. extension
+    end
 
     file, err = io.open(outputPath, "w")
     if not file then
@@ -52,6 +91,16 @@ function OpenFile(path, ext)
 end
 
 for i, v in ipairs(arg) do
+    local res = handleArg(v)
+    if res.outPutDesktop then
+        isDesktop = true
+    end
+end
+for i, v in ipairs(arg) do
+    local res = handleArg(v)
+    if res.isOpt then
+        break
+    end
     local ext = checkFileExtensionAndContinue(v)
     if not ext then
         print(v .. " - Skipping...")
